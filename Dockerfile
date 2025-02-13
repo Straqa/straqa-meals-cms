@@ -1,5 +1,5 @@
 # Base image
-FROM node:22.12.0-alpine AS base
+FROM node:18-alpine AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -10,8 +10,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 # Ensure pnpm-lock.yaml exists
 RUN if [ ! -f pnpm-lock.yaml ]; then echo "pnpm-lock.yaml not found." && exit 1; fi
-# Install dependencies using pnpm
-RUN corepack enable pnpm && pnpm install --frozen-lockfile
+# Install pnpm globally and install dependencies
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -43,7 +43,7 @@ ENV S3_PREFIX=$S3_PREFIX
 # Disable telemetry during the build
 ENV NEXT_TELEMETRY_DISABLED 1
 # Build the application using pnpm
-RUN corepack enable pnpm && pnpm run build
+RUN pnpm run build
 
 # Production image
 FROM base AS runner
