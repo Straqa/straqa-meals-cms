@@ -1,0 +1,95 @@
+name: Deploy Next.js application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm install
+
+      # Uncomment if you want to run linting
+      # - name: Run linting
+      #   run: npm run lint
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: jdmghk/straqa-cms-nextjs:latest
+          target: runner
+          build-args: |
+            DATABASE_URI=${{ secrets.DATABASE_URI }}
+            PAYLOAD_SECRET=${{ secrets.PAYLOAD_SECRET }}
+            S3_ENDPOINT=${{ secrets.S3_ENDPOINT }}
+            S3_ACCESS_KEY_ID=${{ secrets.S3_ACCESS_KEY_ID }}
+            S3_SECRET_ACCESS_KEY=${{ secrets.S3_SECRET_ACCESS_KEY }}
+            S3_BUCKET=${{ secrets.S3_BUCKET }}
+            S3_REGION=${{ secrets.S3_REGION }}
+            S3_FORCE_PATH_STYLE=${{ secrets.S3_FORCE_PATH_STYLE }}
+            S3_PREFIX=${{ secrets.S3_PREFIX }}
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest image
+        run: docker pull jdmghk/straqa-cms-nextjs:latest
+
+      - name: Check if Container Exists and Stop it
+        run: |
+          if [ "$(docker ps -aq -f name=straqa-cms-nextjs-container)" ]; then
+            docker rm -f straqa-cms-nextjs-container
+          fi
+
+      - name: Run new container
+        run: |
+          docker run -d \
+            --init \
+            -p 3000:3000 \
+            --name straqa-cms-nextjs-container \
+            -e DATABASE_URI="${{ secrets.DATABASE_URI }}" \
+            -e PAYLOAD_SECRET="${{ secrets.PAYLOAD_SECRET }}" \
+            -e S3_ENDPOINT="${{ secrets.S3_ENDPOINT }}" \
+            -e S3_ACCESS_KEY_ID="${{ secrets.S3_ACCESS_KEY_ID }}" \
+            -e S3_SECRET_ACCESS_KEY="${{ secrets.S3_SECRET_ACCESS_KEY }}" \
+            -e S3_BUCKET="${{ secrets.S3_BUCKET }}" \
+            -e S3_REGION="${{ secrets.S3_REGION }}" \
+            -e S3_FORCE_PATH_STYLE="${{ secrets.S3_FORCE_PATH_STYLE }}" \
+            -e S3_PREFIX="${{ secrets.S3_PREFIX }}" \
+            jdmghk/straqa-cms-nextjs:latest
+
+      - name: Check container logs
+        run: |
+          sleep 10 # Wait for the container to start up
+          docker logs straqa-cms-nextjs-container
+
+      - name: Clean up Docker resources
+        run: |
+          # Remove unused containers
+          docker container prune -f
+          # Remove unused images
+          docker image prune -a -f
+          # Remove unused volumes
+          docker volume prune -f
+          # Remove unused networks
+          docker network prune -f
