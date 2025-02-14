@@ -23,7 +23,7 @@ FROM base AS builder
 WORKDIR /app
 # Copy node_modules from the deps stage
 COPY --from=deps /app/node_modules ./node_modules
-# Copy the application source code
+# Copy the application source code, excluding node_modules
 COPY . .
 # Define build-time arguments
 ARG DATABASE_URI
