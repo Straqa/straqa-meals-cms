@@ -85,6 +85,8 @@ RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
 # Copy the `.next` directory and static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+# Copy node_modules from the builder stage
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 # Switch to the non-root user
 USER nextjs
 # Expose the app's port
