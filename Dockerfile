@@ -9,9 +9,7 @@ RUN apk add --no-cache \
     build-base \
     python3 \
     libstdc++ \
-    bash \
-    # Install libvips and its dependencies
-    libvips-dev vips-dev vips glib-dev
+    bash
 WORKDIR /app
 # Copy package definition files
 COPY package.json pnpm-lock.yaml* ./
