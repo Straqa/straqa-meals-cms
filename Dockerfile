@@ -41,7 +41,7 @@ ENV S3_PREFIX=$S3_PREFIX
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV SHARP_DIST_BASE_URL=https://cdn.skypack.dev/sharp-libvips
 ENV SHARP_SKIP_AUTOINSTALL=true
-RUN pnpm run build --no-lint
+RUN pnpm run build --no-lint || (cat ./pnpm-debug.log && exit 1)
 
 # Production image
 FROM base AS runner
