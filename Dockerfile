@@ -15,8 +15,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 # Ensure pnpm-lock.yaml exists
 RUN if [ ! -f pnpm-lock.yaml ]; then echo "pnpm-lock.yaml not found." && exit 1; fi
-# Install pnpm globally and install dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile --no-strict-peer-dependencies
+# Install the correct version of pnpm globally and install dependencies
+RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dependencies
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -89,7 +89,6 @@ EXPOSE 3000
 ENV PORT 3000
 # Start the Next.js server
 CMD ["node", "server.js"]
-
 
 
 
