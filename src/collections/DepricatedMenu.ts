@@ -59,15 +59,9 @@ export const DepricatedMenu: CollectionConfig = {
             {
               name: 'items',
               label: 'Menu Items',
-              type: 'array',
-              fields: [
-                {
-                  name: 'image',
-                  type: 'upload',
-                  relationTo: 'media',
-                  required: true,
-                },
-              ],
+              type: 'upload',
+              relationTo: 'media',
+              hasMany: true,
             },
           ],
         },
