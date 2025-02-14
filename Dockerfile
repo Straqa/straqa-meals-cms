@@ -19,7 +19,7 @@ RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dep
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-@@ -34,9 +54,39 @@ ENV SHARP_DIST_BASE_URL=https://cdn.skypack.dev/sharp-libvips
+ENV SHARP_DIST_BASE_URL=https://cdn.skypack.dev/sharp-libvips
 ENV SHARP_SKIP_AUTOINSTALL=true
 # Build the application using pnpm (with --no-lint to bypass ESLint errors)
 RUN pnpm run build --no-lint
