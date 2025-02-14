@@ -162,14 +162,7 @@ export interface DepricatedMenu {
   logo: string | Media;
   content?: {
     background?: (string | null) | Media;
-    slug?: string | null;
-    slugLock?: boolean | null;
-    items?:
-      | {
-          image: string | Media;
-          id?: string | null;
-        }[]
-      | null;
+    items?: (string | Media)[] | null;
   };
   meta?: {
     title?: string | null;
@@ -470,14 +463,7 @@ export interface DepricatedMenusSelect<T extends boolean = true> {
     | T
     | {
         background?: T;
-        slug?: T;
-        slugLock?: T;
-        items?:
-          | T
-          | {
-              image?: T;
-              id?: T;
-            };
+        items?: T;
       };
   meta?:
     | T
