@@ -8,10 +8,10 @@ import {
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from '@/fields/slug'
 import { authenticated } from '@/access/authenticated'
-import { authenticatedOrPublished } from '@/access/authenticatedOrPublished'
+import { anyone } from '@/access/anyone'
 
 export const DepricatedMenu: CollectionConfig = {
-  slug: 'depricated_menu',
+  slug: 'depricated_menus',
   labels: {
     plural: 'Depricated Menus',
     singular: 'Depricated Menu',
@@ -19,7 +19,7 @@ export const DepricatedMenu: CollectionConfig = {
   access: {
     create: authenticated,
     delete: authenticated,
-    read: authenticatedOrPublished,
+    read: anyone,
     update: authenticated,
   },
   defaultPopulate: {
@@ -45,7 +45,6 @@ export const DepricatedMenu: CollectionConfig = {
       relationTo: 'media',
       required: true,
     },
-
     {
       type: 'tabs',
       tabs: [
@@ -102,7 +101,6 @@ export const DepricatedMenu: CollectionConfig = {
         },
       ],
     },
-
     ...slugField(),
   ],
 }
