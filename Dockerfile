@@ -19,7 +19,27 @@ RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dep
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-ENV SHARP_DIST_BASE_URL=https://cdn.skypack.dev/sharp-libvips
+# Install pnpm in the builder stage
+RUN npm install -g pnpm@9
+# Copy node_modules from the deps stage
+COPY --from=deps /app/node_modules ./node_modules
+# Copy the application source code
+COPY . .
+# Define build-time arguments
+ARG DATABASE_URI
+ARG PAYLOAD_SECRET
+ARG S3_ENDPOINT
+ARG S3_ACCESS_KEY_ID
+ARG S3_SECRET_ACCESS_KEY
+ARG S3_BUCKET
+ARG S3_REGION
+ARG S3_FORCE_PATH_STYLE
+ARG S3_PREFIX
+# Set environment variables for the build stage
+ENV DATABASE_URI=$DATABASE_URI
+ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
+ENV S3_ENDPOINT=$S3_ENDPOINT
+ENV S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID
 ENV SHARP_SKIP_AUTOINSTALL=true
 # Build the application using pnpm (with --no-lint to bypass ESLint errors)
 RUN pnpm run build --no-lint
