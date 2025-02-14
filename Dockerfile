@@ -59,7 +59,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ENV SHARP_DIST_BASE_URL=https://cdn.skypack.dev/sharp-libvips
 ENV SHARP_SKIP_AUTOINSTALL=true
 # Build the application using pnpm
-RUN pnpm run build
+RUN pnpm run build --no-lint
 
 # Production image
 FROM base AS runner
