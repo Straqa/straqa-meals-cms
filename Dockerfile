@@ -12,7 +12,7 @@ RUN apk add --no-cache \
 WORKDIR /app
 COPY package.json pnpm-lock.yaml* ./
 RUN if [ ! -f pnpm-lock.yaml ]; then echo "pnpm-lock.yaml not found." && exit 1; fi
-RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dependencies
+RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dependencies --prod
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -62,9 +62,15 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
-# Copy the `.next` directory and static files
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+# Copy the application source code and built assets
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /app/node_modules ./node_modules
+
+# Set the correct permissions
+RUN chown -R nextjs:nodejs .
 
 # Switch to the non-root user
 USER nextjs
@@ -75,9 +81,8 @@ EXPOSE 3000
 # Set the port environment variable
 ENV PORT 3000
 
-# Start the Next.js server
-CMD ["node", "server.js"]
-
+# Start the application using pnpm run start
+CMD ["pnpm", "run", "start"]
 
 
 
