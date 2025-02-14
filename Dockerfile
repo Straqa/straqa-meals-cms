@@ -43,9 +43,7 @@ ENV S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID
 ENV SHARP_SKIP_AUTOINSTALL=true
 # Build the application using pnpm (with --no-lint to bypass ESLint errors)
 RUN pnpm run build --no-lint
-# Debug: List the contents of /app after the build
-RUN ls -la /app
-RUN ls -la /app/.next
+
 # Production image
 FROM base AS runner
 WORKDIR /app
