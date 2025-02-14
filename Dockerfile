@@ -27,6 +27,8 @@ RUN npm install -g pnpm@9
 COPY --from=deps /app/node_modules ./node_modules
 # Copy the application source code
 COPY . .
+# Debug: List files in /app
+RUN ls -l /app
 # Define build-time arguments
 ARG DATABASE_URI
 ARG PAYLOAD_SECRET
@@ -49,10 +51,12 @@ RUN pnpm run build --no-lint
 # Production image
 FROM base AS runner
 WORKDIR /app
-
 # Install pnpm globally in the production image
 RUN npm install -g pnpm@9
-
+# Copy the package.json file
+COPY package.json pnpm-lock.yaml* ./
+# Debug: List files in /app
+RUN ls -l /app
 # Set the runtime environment to production
 ENV NODE_ENV production
 ENV DATABASE_URI=$DATABASE_URI
@@ -65,26 +69,19 @@ ENV S3_REGION=$S3_REGION
 ENV S3_FORCE_PATH_STYLE=$S3_FORCE_PATH_STYLE
 ENV S3_PREFIX=$S3_PREFIX
 ENV NEXT_TELEMETRY_DISABLED 1
-
 # Create a system group and user for non-root execution
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
 # Set the correct permissions for the `.next` directory
 RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
-
 # Copy the `.next` directory and static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-
 # Switch to the non-root user
 USER nextjs
-
 # Expose the app's port
 EXPOSE 3000
-
 # Set the port environment variable
 ENV PORT 3000
-
 # Start the Next.js server
 CMD ["pnpm", "run", "start"]
