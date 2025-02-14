@@ -75,4 +75,4 @@ EXPOSE 3000
 # Set the port environment variable
 ENV PORT 3000
 # Start the Next.js server
-CMD ["node", "server.js"]
+CMD ["pnpm", "run", "start"]
