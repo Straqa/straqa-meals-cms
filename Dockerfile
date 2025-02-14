@@ -15,11 +15,30 @@ RUN if [ ! -f pnpm-lock.yaml ]; then echo "pnpm-lock.yaml not found." && exit 1;
 RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dependencies --prod
 
 # Rebuild the source code only when needed
+# Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 RUN npm install -g pnpm@9
+
+# Install additional build dependencies for sharp
+RUN apk add --no-cache \
+    libc6-compat \
+    build-base \
+    python3 \
+    libstdc++ \
+    bash \
+    libvips-dev \
+    tiff-dev \
+    giflib-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libwebp-dev
+
+# Copy node_modules from the deps stage
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Define build-time arguments
 ARG DATABASE_URI
 ARG PAYLOAD_SECRET
 ARG S3_ENDPOINT
@@ -29,6 +48,8 @@ ARG S3_BUCKET
 ARG S3_REGION
 ARG S3_FORCE_PATH_STYLE
 ARG S3_PREFIX
+
+# Set environment variables for the build stage
 ENV DATABASE_URI=$DATABASE_URI
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV S3_ENDPOINT=$S3_ENDPOINT
@@ -41,7 +62,9 @@ ENV S3_PREFIX=$S3_PREFIX
 ENV NEXT_TELEMETRY_DISABLED 1
 ENV SHARP_DIST_BASE_URL=https://cdn.skypack.dev/sharp-libvips
 ENV SHARP_SKIP_AUTOINSTALL=true
-RUN pnpm run build --no-lint || (cat ./pnpm-debug.log && exit 1)
+
+# Build the application using pnpm
+RUN pnpm run build --no-lint 
 
 # Production image
 FROM base AS runner
