@@ -10,12 +10,8 @@ RUN apk add --no-cache \
     python3 \
     libstdc++ \
     bash \
-    vips-dev \
-    tiff-dev \
-    giflib-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    libwebp-dev
+    # Install libvips and its dependencies
+    libvips-dev vips-dev vips glib-dev
 WORKDIR /app
 # Copy package definition files
 COPY package.json pnpm-lock.yaml* ./
@@ -27,11 +23,9 @@ RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dep
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-# Install pnpm in the builder stage
-RUN npm install -g pnpm@9
 # Copy node_modules from the deps stage
 COPY --from=deps /app/node_modules ./node_modules
-# Copy the application source code
+# Copy the application source code, excluding node_modules
 COPY . .
 # Define build-time arguments
 ARG DATABASE_URI
@@ -86,7 +80,7 @@ COPY --from=builder /app/public ./public/
 # Set the correct permissions for the `.next` directory
 RUN mkdir -p .next
 RUN chown -R nextjs:nodejs .next
-# Copy the built assets
+# Copy the standalone build and static files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 # Switch to the non-root user
