@@ -56,7 +56,6 @@ export const DepricatedMenu: CollectionConfig = {
               type: 'upload',
               relationTo: 'media',
             },
-            ...slugField(),
             {
               name: 'items',
               label: 'Menu Items',
