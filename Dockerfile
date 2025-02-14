@@ -27,7 +27,7 @@ RUN apk add --no-cache \
     python3 \
     libstdc++ \
     bash \
-    libvips-dev \
+    vips-dev \
     tiff-dev \
     giflib-dev \
     libpng-dev \
