@@ -1,5 +1,5 @@
 # Base image
-FROM node:22.12.0-alpine AS base
+FROM node:22.12.0-alpine3.18 AS base
 
 # Install dependencies only when needed
 FROM base AS deps
@@ -10,8 +10,19 @@ RUN apk add --no-cache \
     python3 \
     libstdc++ \
     bash \
-    # Install libvips and its dependencies
-    libvips-dev vips-dev vips glib-dev
+    vips-dev \
+    fftw-dev \
+    giflib-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    tiff-dev \
+    glib-dev \
+    littlecms2-dev \
+    openexr-dev \
+    zlib-dev \
+    lcms2-dev
+
 WORKDIR /app
 # Copy package definition files
 COPY package.json pnpm-lock.yaml* ./
