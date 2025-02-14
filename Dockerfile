@@ -21,11 +21,11 @@ RUN npm install -g pnpm@9 && pnpm install --frozen-lockfile --no-strict-peer-dep
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
-# Ensure node_modules is a directory
-RUN mkdir -p /app/node_modules
+# Install pnpm in the builder stage
+RUN npm install -g pnpm@9
 # Copy node_modules from the deps stage
 COPY --from=deps /app/node_modules ./node_modules
-# Copy the application source code, excluding node_modules
+# Copy the application source code
 COPY . .
 # Define build-time arguments
 ARG DATABASE_URI
