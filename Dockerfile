@@ -16,7 +16,7 @@ COPY package.json pnpm-lock.yaml* ./
 # Ensure pnpm-lock.yaml exists
 RUN if [ ! -f pnpm-lock.yaml ]; then echo "pnpm-lock.yaml not found." && exit 1; fi
 # Install pnpm globally and install dependencies
-RUN npm install -g pnpm && pnpm install --frozen-lockfile --legacy-peer-deps
+RUN npm install -g pnpm && pnpm install --frozen-lockfile --no-strict-peer-dependencies
 
 # Rebuild the source code only when needed
 FROM base AS builder
