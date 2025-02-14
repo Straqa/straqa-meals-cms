@@ -9,7 +9,9 @@ RUN apk add --no-cache \
     build-base \
     python3 \
     libstdc++ \
-    bash
+    bash \
+    # Install libvips and its dependencies
+    libvips-dev vips-dev vips glib-dev
 WORKDIR /app
 # Copy package definition files
 COPY package.json pnpm-lock.yaml* ./
@@ -44,6 +46,12 @@ ENV DATABASE_URI=$DATABASE_URI
 ENV PAYLOAD_SECRET=$PAYLOAD_SECRET
 ENV S3_ENDPOINT=$S3_ENDPOINT
 ENV S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID
+ENV S3_ACCESS_KEY_ID=$S3_ACCESS_KEY_ID
+ENV S3_SECRET_ACCESS_KEY=$S3_SECRET_ACCESS_KEY
+ENV S3_BUCKET=$S3_BUCKET
+ENV S3_REGION=$S3_REGION
+ENV S3_FORCE_PATH_STYLE=$S3_FORCE_PATH_STYLE
+ENV S3_PREFIX=$S3_PREFIX
 ENV SHARP_SKIP_AUTOINSTALL=true
 # Build the application using pnpm (with --no-lint to bypass ESLint errors)
 RUN pnpm run build --no-lint
@@ -69,6 +77,8 @@ ENV S3_REGION=$S3_REGION
 ENV S3_FORCE_PATH_STYLE=$S3_FORCE_PATH_STYLE
 ENV S3_PREFIX=$S3_PREFIX
 ENV NEXT_TELEMETRY_DISABLED 1
+# Set NODE_OPTIONS directly
+ENV NODE_OPTIONS=--no-deprecation
 # Create a system group and user for non-root execution
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
