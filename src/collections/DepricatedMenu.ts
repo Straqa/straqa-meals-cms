@@ -102,5 +102,7 @@ export const DepricatedMenu: CollectionConfig = {
         },
       ],
     },
+
+    ...slugField(),
   ],
 }
