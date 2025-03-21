@@ -14,7 +14,7 @@ export interface Config {
     users: User;
     media: Media;
     menus: Menu;
-    depricated_menu: DepricatedMenu;
+    depricated_menus: DepricatedMenu;
     search: Search;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -26,7 +26,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     menus: MenusSelect<false> | MenusSelect<true>;
-    depricated_menu: DepricatedMenuSelect<false> | DepricatedMenuSelect<true>;
+    depricated_menus: DepricatedMenusSelect<false> | DepricatedMenusSelect<true>;
     search: SearchSelect<false> | SearchSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -154,7 +154,7 @@ export interface Menu {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "depricated_menu".
+ * via the `definition` "depricated_menus".
  */
 export interface DepricatedMenu {
   id: string;
@@ -162,14 +162,7 @@ export interface DepricatedMenu {
   logo: string | Media;
   content?: {
     background?: (string | null) | Media;
-    slug?: string | null;
-    slugLock?: boolean | null;
-    items?:
-      | {
-          image: string | Media;
-          id?: string | null;
-        }[]
-      | null;
+    items?: (string | Media)[] | null;
   };
   meta?: {
     title?: string | null;
@@ -179,6 +172,8 @@ export interface DepricatedMenu {
     image?: (string | null) | Media;
     description?: string | null;
   };
+  slug?: string | null;
+  slugLock?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -324,7 +319,7 @@ export interface PayloadLockedDocument {
         value: string | Menu;
       } | null)
     | ({
-        relationTo: 'depricated_menu';
+        relationTo: 'depricated_menus';
         value: string | DepricatedMenu;
       } | null)
     | ({
@@ -459,23 +454,16 @@ export interface MenusSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "depricated_menu_select".
+ * via the `definition` "depricated_menus_select".
  */
-export interface DepricatedMenuSelect<T extends boolean = true> {
+export interface DepricatedMenusSelect<T extends boolean = true> {
   title?: T;
   logo?: T;
   content?:
     | T
     | {
         background?: T;
-        slug?: T;
-        slugLock?: T;
-        items?:
-          | T
-          | {
-              image?: T;
-              id?: T;
-            };
+        items?: T;
       };
   meta?:
     | T
@@ -484,6 +472,8 @@ export interface DepricatedMenuSelect<T extends boolean = true> {
         image?: T;
         description?: T;
       };
+  slug?: T;
+  slugLock?: T;
   updatedAt?: T;
   createdAt?: T;
 }

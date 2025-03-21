@@ -22,6 +22,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
+  cors: ['*'],
   collections: [Users, Media, Menus, DepricatedMenu],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
